@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!-- DAO에서 요청하는 객체들의 데이터 타입을 alias 매핑하는곳 
+	그리고 path 설정
+-->
+
+<configuration>
+	<!-- 공통설정에 해주어야 한다. -->
+<typeAliases>
+	<typeAlias alias="guestbookvo" type="com.jx372.mysite.vo.GuestbookVo" />
+	<typeAlias alias="uservo" type="com.jx372.mysite.vo.UserVo" />
+	<typeAlias alias="boardvo" type="com.jx372.mysite.vo.BoardVo" />
+	<typeAlias alias="adminvo" type="com.jx372.mysite.vo.AdminVo" />
+	<typeAlias alias="galleryvo" type="com.jx372.mysite.vo.GalleryVo" />
+</typeAliases>
+
+<!-- SQL을 저장하는 파일 -->
+	<mappers>
+		<mapper resource="mybatis/mappers/user.xml" />
+		<mapper resource="mybatis/mappers/guestbook.xml" />
+		<mapper resource="mybatis/mappers/board.xml" />
+		<mapper resource="mybatis/mappers/admin.xml" />
+		<mapper resource="mybatis/mappers/gallery.xml"/>
+	</mappers>
+</configuration>

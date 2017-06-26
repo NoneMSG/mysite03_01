@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="guestbook">
+
+	<!-- show list -->
+	<select id="getList" resultType="guestbookvo">
+		<![CDATA[
+			select no, 
+				name, 
+				message, 
+				date_format(reg_date, '%Y-%m-%d') as regDate
+			from guestbook
+		order by reg_date desc
+		]]>
+	</select>
+	
+	<!-- insert -->
+	<insert id="insert" parameterType="guestbookvo">
+		<selectKey keyProperty="no" resultType="long" order="AFTER">
+				select last_insert_id()
+		</selectKey>
+		<![CDATA[
+		insert 
+			into guestbook 
+		values( #{no}, #{name}, #{passwd}, #{message}, now() )
+		]]>
+	</insert>
+	
+	<!-- 객체는 한개만 넘길 수 있다. 반드시 setter,getter가 구현되어있어야한다.
+	<insert id="insert" parameterType="guestbookvo">
+		<![CDATA[
+		insert 
+			into guestbook 
+		values( null, #{name}, #{passwd}, #{message}, now() )
+		]]>
+	</insert>-->
+	
+	<!-- delete -->
+	<select id="delete" parameterType="guestbookvo">
+		<![CDATA[
+			delete from guestbook 
+			where no = #{no} and passwd = #{passwd}
+		]]>
+	</select>
+	
+	<!-- 객체를 못쓰는경우 그냥 map을사용! 
+	<select id="delete2" parameterType="map">
+		<![CDATA[
+			delete from guestbook 
+			where no = #{no} and passwd = #{passwd}
+		]]>
+	</select>
+	-->
+	
+
+</mapper>
