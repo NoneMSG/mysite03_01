@@ -44,10 +44,18 @@
 				
 				return false;
 			}
-			
+			/*
 			//email 중복 체크
 			var emailValid = document.getElementById("check-button");
 			if(emailValid.style.display===""){
+				console.log(emailValid.style.display);
+				alert("이메일 중복 체크를 하시오!");
+				return false;
+			}*/
+			
+			//email 중복 체크
+			var emailValid = document.getElementById("check-img");
+			if(emailValid.style.display!=="block"){
 				console.log(emailValid.style.display);
 				alert("이메일 중복 체크를 하시오!");
 				return false;
