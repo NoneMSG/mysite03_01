@@ -14,74 +14,61 @@
 <script src="${pageContext.servletContext.contextPath }/assets/js/jquery/jquery-1.9.0.js"></script>
 <script>
 
-	window.addEventListener("load",function(){
-			
-		document.getElementById( "join-form" ).
-		onsubmit = function(){
-			
-			
-			
-			//name check
-			var inputName = document.getElementById( "name" );
-			if(inputName.value === ""){
-				alert("이름을 입력 하세요!");
-				inputName.focus();
-				return false;
-			}
-			//password check
-			var passwordCheck = document.getElementById("password");
-			if(passwordCheck.value===""){
-				alert("비밀번호를 입력 하세요!");
-				passwordCheck.focus();
-				return false;
-			}
-			
-			//email 체크
-			var emailInput = document.getElementById("email");
-			if(emailInput.value===""){
-				alert("이메일을 입력하세요");
-				emailInput.focuse();
+var joinForm ={
+		init:function(){
+			$("#join-form").submit(function(){
 				
-				return false;
-			}
-			/*
-			//email 중복 체크
-			var emailValid = document.getElementById("check-button");
-			if(emailValid.style.display===""){
-				console.log(emailValid.style.display);
-				alert("이메일 중복 체크를 하시오!");
-				return false;
-			}*/
-			
-			//email 중복 체크
-			var emailValid = document.getElementById("check-img");
-			if(emailValid.style.display!=="block"){
-				console.log(emailValid.style.display);
-				alert("이메일 중복 체크를 하시오!");
-				return false;
-			}
-			
-			//사용자동의
-			var agreeCheck = document.getElementById("agree-prov");
-			if(agreeCheck.checked === false){
-				alert("가입 약관에 동의 하세요!");
-				agreeCheck.focus();
-				return false;
-			}
-			
-			
-			return true;
+				if($("#name").val()===""){
+					alert("이름을 입력 하세요!");
+					$("#name").focus();
+					return false;
+				};
+				
+				if($("#password").val()===""){
+					alert("비밀번호 입력 해라");
+					$("#password").focus();
+					return false;
+				};
+				
+				if( $("#email").val()===""){
+					alert("이메일을 입력하세요");
+					$("#email").focus();
+					return false;
+				};
+				
+				if( ($("#check-img").is(":visible"))==false ){
+					alert("이메일 중복 체크를 하시오!");
+					return false;
+				};
+				
+				if( ($("#agree-prov").is(":checked"))==false ){
+					alert("사용자동의  체크를 하시오!");
+					return false;
+				};
+				
+				return true;
+			});
 		}
-	
-		var btnCheck = document.getElementById("check-button");
 		
-		btnCheck.addEventListener("click",function(){
-			var email = $("#email").val();
-			if(email==""){alert("email을 입력해라!");return ;}
-			
+		
+};
+
+		
+	
+	$(function(){
+		joinForm.init();
+		
+		var $emailForm = $("#email");
+		var $checkBtn = $("#check-button");
+		var $imgCheck = $("#check-img");
+		$("#check-button").click(function(){
+			if( $("#email").val() ===""  ){
+				alert("email을 입력해라!!!");
+				return ;
+			}
 			//ajax 통신 
 			$.ajax( {
-			    url : "/mysite03/user/api/checkemail?email="+email, //해당 페이지는 메일 체크하는 페이지에 get방식으로 데이터를 보낸다.
+			    url : "/mysite03/user/api/checkemail?email="+$("#email").val(), //해당 페이지는 메일 체크하는 페이지에 get방식으로 데이터를 보낸다.
 			    type: "get",
 			    dataType: "json",
 			    data: "",
@@ -89,16 +76,13 @@
 			    		//console.log(response);
 			    	if(response.data==true){
 			    		alert("이미 존재하는 email 입니다.");
-			    		
 			    		//email 입력창에 focus
-			    		document.getElementById("email").focus();
+			    		$emailForm.focus();
 			    	}else{
 			    		//alert("사용가능한 email입니다.")
-			    		var img = document.getElementById("check-img");
-			    		var checkbtn = document.getElementById("check-button");
-			    		img.style.display="block";
-			    		checkbtn.style.display="none";
-			    		console.log("사용가능한 email");
+			    		$imgCheck.show();
+			    		$checkBtn.hide();
+			    		//console.log("사용가능한 email");
 			    	}
 			    },
 			    error: function( jqXHR, status, error ){
@@ -107,9 +91,8 @@
 			 });
 		});
 		
-		
+			
 	});
-	
 		
 </script>
 </head>
