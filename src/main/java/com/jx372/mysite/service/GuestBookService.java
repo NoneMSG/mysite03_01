@@ -20,6 +20,9 @@ public class GuestBookService {
 	public List<GuestbookVo> getList() {
 		return gbDao.getList();
 	}
+	public List<GuestbookVo> getList(Long startNo) {
+		return gbDao.getList(startNo);
+	}
 	public void delete(GuestbookVo gbVo){
 		gbDao.delete(gbVo);
 	}

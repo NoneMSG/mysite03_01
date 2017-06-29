@@ -20,6 +20,10 @@ public class GuestbookDao {
 	
 		return list;
 	}
+	public List<GuestbookVo> getList(Long startNo) {
+		List<GuestbookVo> list = sqlSession.selectList("guestbook.getListByNo",startNo);
+		return list;
+	}
 	
 	public int delete( GuestbookVo vo ) {
 		int count = sqlSession.delete("guestbook.delete",vo); //객체를 하나밖에 넘길 수 없다.
