@@ -12,6 +12,8 @@
 <script type="text/javascript" src="${pageContext.request.contextPath }/assets/js/jquery/jquery-1.9.0.js"></script>
 <script type="text/javascript">
 
+var isEnd = false;
+
 var render =function(vo){
 	
 	//정규표현식 /\n/gi :global ignore case
@@ -25,30 +27,52 @@ var render =function(vo){
 		$("#list-guestbook").append(html);
 }
 
+var fetchList = function(){
+	if(isEnd===true){
+		return
+	}
+	var startNo = 
+		$("#list-guestbook li").last().data("no") || 0; //data값이 null이라면 0으로 세팅하는 논리연산
+		/*
+		if( ($("#list-guestbook li").last().data("no")) !== null){
+			startNo=$("#list-guestbook li").last().data("no");
+		}else{startNo=0;}*/
+	
+		$.ajax({
+			url: "${pageContext.request.contextPath}/guestbook/api/list?sno="+startNo,
+			type:"get",
+			dataType: "json",
+			data:"",
+			success : function(response){
+				if(response.result==="fail"){
+					console.error(response.message);
+					return;
+					}
+				
+					//detect end
+					if(response.data.length < 5){
+						isEnd=true;
+						//$("#btn-next").prop("disabled",true);
+						$("#btn-next").hide();
+					}
+				
+					//rendering
+					$.each(response.data, function(index, vo){
+						render(vo);
+					});
+				},
+				error : function(jqXHR,status,e){
+					console.log(status+":"+e);
+					}
+		});
+}
+
 	$(function(){
 		
 		$("#btn-next").click(function(){
-				$.ajax({
-					url: "${pageContext.request.contextPath}/guestbook/api/list?sno=0",
-					type:"get",
-					dataType: "json",
-					data:"",
-					success : function(response){
-						if(response.result==="fail"){
-							console.error(response.message);
-							return;
-							}
-							//rendering
-							$.each(response.data, function(index, vo){
-								render(vo);
-							});
-						},
-						error : function(jqXHR,status,e){
-							console.log(status+":"+e);
-							}
-				});
+				fetchList();
 			});
-		});
+	});
 
 	
 </script>
@@ -69,7 +93,7 @@ var render =function(vo){
 				<ul id="list-guestbook">
 				</ul>
 					<div style="margin:15px 0; text-align: center">
-						<button id="btn-next" style="padding:10px 20px; font-size: 1.5em">next</button>
+						<button id="btn-next" style="padding:10px 20px ">next</button>
 					</div>
 			</div>						
 		</div>
