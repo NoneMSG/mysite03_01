@@ -21,6 +21,13 @@ public class GuestBookController {
 	@Autowired
 	private GuestBookService gbService;
 	
+	@RequestMapping("/listtest")
+	public String listtest(Model model) {
+		List<GuestbookVo> list = gbService.getList();
+		model.addAttribute("list", list);
+		return "guestbook/listTest";
+	}
+	
 	@RequestMapping({"/list",""})
 	public String list(Model model) {
 		List<GuestbookVo> list = gbService.getList();
