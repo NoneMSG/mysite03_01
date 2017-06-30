@@ -1,27 +1,54 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%> 
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ page contentType="text/html;charset=UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <title>mysite</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="${pageContext.request.contextPath }/assets/css/guestbook-ajax.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath }/assets/css/guestbook-ajax.css"
+	rel="stylesheet" type="text/css">
+<link rel="stylesheet"
+	href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <style type="text/css">
-	
-	.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
-    float: none;
-    text-align: center;
-	}
-	.ui-dialog .ui-dialog-buttonpane button{
-		margin-left:auto;
-		margin-right:auto;
-	}
-	
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+	float: none;
+	text-align: center;
+}
+
+.ui-dialog .ui-dialog-buttonpane button {
+	margin-left: 10px;
+	margin-right: 1;
+}
+
+#dialog-message p {
+	padding: 20px 0;
+	font-weight: bold;
+	font-size: 1.0em
+}
+
+#dialog-delete-form p {
+	padding: 10px;
+	font-weight: bold;
+	font-size: 1.0em
+}
+
+#dialog-delete-form input[type="password"] {
+	padding: 5px;
+	border: 1px solid #888;
+	outline: none;
+	width: 180;
+}
+
+.validateTips error{
+	color: 0ff;
+}
+
 </style>
-<script type="text/javascript" src="${pageContext.request.contextPath }/assets/js/jquery/jquery-1.9.0.js"></script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath }/assets/js/jquery/jquery-1.9.0.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script type="text/javascript">
 
@@ -89,17 +116,83 @@ var fetchList = function(){
 						render( vo, false );
 					});
 				},
-				error : function(jqXHR,status,e){
+			 error : function(jqXHR,status,e){
 					console.log(status+":"+e);
 					}
 		});
 }
 //DOM이 올라오고 나서 실행되는 자바스크립트
 	$(function(){
-		$("#list-guestbook li a").click(function(event){
+		
+		var dialogDelete = $( "#dialog-delete-form" ).dialog({
+		      autoOpen: false,
+		      height: 170,
+		      width: 250,
+		      modal: true,
+		      buttons: {
+		        
+		    	  "Delete": function(){
+		    		  
+		        	var no = $("#delete-no").val();
+		        	var password = $("#delete-password").val();
+		        	
+		        	//console.log(no+":"+password);
+		        	
+		        	
+		        	//delete ajax 
+		        	$.ajax({
+		    			url: "${pageContext.request.contextPath}/guestbook/api/delete",
+		    			type:"post",
+		    			dataType: "json",
+		    			data:"no="+no+"&"+
+		    				"password="+password,
+		    			success : function(response){
+		    				if(response.result==="fail"){
+		    					console.error(response.message);
+		    					return;
+		    					}
+		    					console.log(response.data);
+		    					
+		    					//삭제실패
+		    					if(response.data===-1){
+		    						$("#dialog-delete-form .validateTips.normal").hide();
+		    						$("#dialog-delete-form .validateTips.error").show();
+		    						$("#delete-password").val("");
+		    						return ;
+		    					}	
+		    					
+		    					//삭제성공
+		    					$( "#list-guestbook li[data-no='" + response.data + "']" ).remove();
+		    					$("#delete-password").val("");
+								dialogDelete.dialog( "close" );
+		    					 
+		    				},
+		    				error : function(jqXHR,status,e){
+		    					console.log(status+":"+e);
+		    				}
+		    		});
+		        	
+		        },
+		   	    "Cancel" : function() {
+		   	    	$("#delete-password").val("");
+		   	    	$("#dialog-delete-form .validateTips.error").hide();
+		   	    	$("#dialog-delete-form .validateTips.normal").show();
+		   	    	dialogDelete.dialog( "close" );
+		        }
+		      },
+		     close: function() {
+			  }
+	    });
+		
+		
+		//live event,,, li a(삭제버튼)은 리스트를 불러오기 전에 생성되자 않기 때문에 후 처리를 해주어야함
+		$(document).on("click", "#list-guestbook li a", function(event){
 			event.preventDefault();
-			console.log("delte");
-		});
+			var no = $(this).data("no");
+			$("#delete-no").val(no);
+			dialogDelete.dialog("open");
+			//console.log( no );
+		})
 		
 		$("#add-form").submit(function(event){
 			//submit event 기본 동작 정지 posting을 막음
@@ -166,8 +259,6 @@ var fetchList = function(){
 			var windowHeight = $window.height();
 			var documentHeight = $(document).height();
 			
-			//console.log(documentHeight+">="+scrollTop+"+"+windowHeight);
-			
 			//scrollbar thumb가 바닥전 10px 까지 왔을 때
 			if(scrollTop+windowHeight+10>documentHeight){
 				fetchList();
@@ -191,25 +282,40 @@ var fetchList = function(){
 	<div id="container">
 		<c:import url="/WEB-INF/views/include/header.jsp" />
 		<div id="content">
-			<div id="dialog-message" title="방명록에 글 남기기" style="display:none">
-	  			<p>빈 양식이 있습니다.</p>
+			<div id="dialog-message" title="방명록에 글 남기기" style="display: none">
+				<p>빈 양식이 있습니다.</p>
 			</div>
 			<div id="guestbook">
 				<h1>방명록</h1>
 				<form id="add-form" action="#" method="post">
-					<input type="text" id="input-name" placeholder="이름">
-					<input type="password" id="input-password" placeholder="비밀번호">
+					<input type="text" id="input-name" placeholder="이름"> <input
+						type="password" id="input-password" placeholder="비밀번호">
 					<textarea id="ta-message" placeholder="내용을 입력해 주세요."></textarea>
 					<input type="submit" value="보내기" />
 				</form>
 				<ul id="list-guestbook"></ul>
-					<div style="margin:15px 0; text-align: center">
-						<button id="btn-next" style="padding:10px 20px ">next</button>
-					</div>
-			</div>						
+				<div style="margin: 15px 0; text-align: center">
+					<button id="btn-next" style="padding: 10px 20px">next</button>
+				</div>
+			</div>
+
+			<div id="dialog-delete-form" title="Message remove"
+				style="display: none">
+				<p class="validateTips normal">Input the password</p>
+				<p class="validateTips error" style="display:none">비밀번호 틀림</p>
+				<form>
+					<input type="hidden" name="no" id="delete-no" value="" /> <input
+						type="password" name="password" id="delete-password" value=""
+						class="text ui-widget-content ui-corner-all">
+					<!-- Allow form submission with keyboard without duplicating the dialog button -->
+					<input type="submit" tabindex="-1"
+						style="position: absolute; top: -1000px">
+				</form>
+			</div>
+
 		</div>
 		<c:import url="/WEB-INF/views/include/navigation.jsp">
-			<c:param name="menu" value="guestbook-ajax"/>
+			<c:param name="menu" value="guestbook-ajax" />
 		</c:import>
 		<c:import url="/WEB-INF/views/include/footer.jsp" />
 	</div>

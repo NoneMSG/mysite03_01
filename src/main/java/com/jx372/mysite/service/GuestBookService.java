@@ -20,8 +20,9 @@ public class GuestBookService {
 	public List<GuestbookVo> getList(Long startNo) {
 		return gbDao.getList(startNo);
 	}
-	public void delete(GuestbookVo gbVo){
-		gbDao.delete(gbVo);
+	public boolean delete(GuestbookVo gbVo){
+		  
+		return 1==gbDao.delete(gbVo);
 	}
 	
 	public int writeMessage(GuestbookVo vo){
