@@ -42,35 +42,20 @@
 		<![CDATA[
 		insert 
 			into guestbook 
-		values( #{no}, #{name}, #{passwd}, #{message}, now() )
+		values( #{no}, #{name}, #{password}, #{message}, now() )
 		]]>
 	</insert>
 	
-	<!-- 객체는 한개만 넘길 수 있다. 반드시 setter,getter가 구현되어있어야한다.
-	<insert id="insert" parameterType="guestbookvo">
-		<![CDATA[
-		insert 
-			into guestbook 
-		values( null, #{name}, #{passwd}, #{message}, now() )
-		]]>
-	</insert>-->
-	
+
 	<!-- delete -->
 	<select id="delete" parameterType="guestbookvo">
 		<![CDATA[
 			delete from guestbook 
-			where no = #{no} and passwd = #{passwd}
+			where no = #{no} and passwd = #{password}
 		]]>
 	</select>
 	
-	<!-- 객체를 못쓰는경우 그냥 map을사용! 
-	<select id="delete2" parameterType="map">
-		<![CDATA[
-			delete from guestbook 
-			where no = #{no} and passwd = #{passwd}
-		]]>
-	</select>
-	-->
+	
 	
 
 </mapper>

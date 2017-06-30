@@ -3,7 +3,7 @@ package com.jx372.mysite.vo;
 public class GuestbookVo {
 	private Long no;
 	private String name;
-	private String passwd;
+	private String password;
 	private String message;
 	private String regDate;
 	
@@ -19,11 +19,11 @@ public class GuestbookVo {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getPasswd() {
-		return passwd;
+	public String getPassword() {
+		return password;
 	}
-	public void setPasswd(String passwd) {
-		this.passwd = passwd;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	public String getMessage() {
 		return message;
@@ -39,7 +39,7 @@ public class GuestbookVo {
 	}
 	@Override
 	public String toString() {
-		return "GuestbookVo [no=" + no + ", name=" + name + ", passwd=" + passwd + ", message=" + message + ", regDate="
+		return "GuestbookVo [no=" + no + ", name=" + name + ", password=" + password + ", message=" + message + ", regDate="
 				+ regDate + "]";
 	}
 }

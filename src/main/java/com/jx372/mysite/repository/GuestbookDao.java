@@ -29,15 +29,7 @@ public class GuestbookDao {
 		int count = sqlSession.delete("guestbook.delete",vo); //객체를 하나밖에 넘길 수 없다.
 		return count;
 	}
-	
-//	public int delete2( Long no, String passwd ) {
-//		Map<String, Object> map = new HashMap<String, Object>();
-//		map.put("no", no);
-//		map.put("passwd", passwd);
-//		int count = sqlSession.delete("guestbook.delete",map);
-//		return count;
-//	}
-	
+
 	public int insert( GuestbookVo vo ) {
 		
 		return sqlSession.insert("guestbook.insert", vo);

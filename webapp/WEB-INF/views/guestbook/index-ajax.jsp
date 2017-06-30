@@ -9,12 +9,39 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <link rel="stylesheet" href="${pageContext.request.contextPath }/assets/css/guestbook-ajax.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<style type="text/css">
+	
+	.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+    float: none;
+    text-align: center;
+	}
+	.ui-dialog .ui-dialog-buttonpane button{
+		margin-left:auto;
+		margin-right:auto;
+	}
+	
+</style>
 <script type="text/javascript" src="${pageContext.request.contextPath }/assets/js/jquery/jquery-1.9.0.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script type="text/javascript">
 
 var isEnd = false;
 
-var render =function(vo){
+var MessageBox = function(title, message, callback){
+	 $("#dialog-message").attr("title", title);
+	 $("#dialog-message p ").text(message);
+	 $( "#dialog-message" ).dialog({
+		 modal:true,
+		 buttons:{
+			 Ok: function(){
+				 $(this).dialog("close");
+			 }
+		 },
+	 	close: callback || function(){}
+	 });
+}
+
+var render =function(vo, mode){
 	
 	//정규표현식 /\n/gi :global ignore case
 	//상용 app에선 templete 라이브러리 사용 ex) ejs 
@@ -24,7 +51,12 @@ var render =function(vo){
 		"<p>"+vo.message.replace( /\n/gi, "<br>")+"</p>"+
 		"<a href='' data-no='"+vo.no+"'>삭제</a>"+
 		"</li>";
-		$("#list-guestbook").append(html);
+		
+		if( mode === true ) {
+			$( "#list-guestbook" ).prepend( html );	
+		} else {
+			$( "#list-guestbook" ).append( html );
+		}
 }
 
 var fetchList = function(){
@@ -33,11 +65,7 @@ var fetchList = function(){
 	}
 	var startNo = 
 		$("#list-guestbook li").last().data("no") || 0; //data값이 null이라면 0으로 세팅하는 논리연산
-		/*
-		if( ($("#list-guestbook li").last().data("no")) !== null){
-			startNo=$("#list-guestbook li").last().data("no");
-		}else{startNo=0;}*/
-	
+		
 		$.ajax({
 			url: "${pageContext.request.contextPath}/guestbook/api/list?sno="+startNo,
 			type:"get",
@@ -52,13 +80,13 @@ var fetchList = function(){
 					//detect end
 					if(response.data.length < 5){
 						isEnd=true;
-						//$("#btn-next").prop("disabled",true);
+						$("#btn-next").prop("disabled",true);
 						$("#btn-next").hide();
 					}
 				
 					//rendering
 					$.each(response.data, function(index, vo){
-						render(vo);
+						render( vo, false );
 					});
 				},
 				error : function(jqXHR,status,e){
@@ -66,13 +94,94 @@ var fetchList = function(){
 					}
 		});
 }
-
+//DOM이 올라오고 나서 실행되는 자바스크립트
 	$(function(){
+		$("#list-guestbook li a").click(function(event){
+			event.preventDefault();
+			console.log("delte");
+		});
+		
+		$("#add-form").submit(function(event){
+			//submit event 기본 동작 정지 posting을 막음
+			event.preventDefault();
+			
+			//form data validation
+			var name = $("#input-name").val();
+			if(name===""){
+				MessageBox("방명록 글 입력","이름은 필수 입력항목",
+						function(){
+					$("#input-name").focus();
+				});
+				return ;
+			}
+			
+			var password = $("#input-password").val();
+			if(password===""){
+				MessageBox("메시지 입력","비밀번호는 필수 입력항목",
+						function(){
+					$("#input-password").focus();
+				});
+				return ;
+			}
+			
+			var message = $("#ta-message").val();
+			if(message===""){
+				MessageBox("메시지 입력","내용은 필수 입력항목",
+						function(){
+					$("#ta-message").focus();
+				});
+				return ;
+			}
+			
+			//방명록 메시지 입력 ajax통신 
+			$.ajax( {
+				url : "${pageContext.request.contextPath }/guestbook/api/add",
+				type: "post",
+				dataType: "json",
+				data: "name=" + name + "&" +
+					  "password=" + password + "&" +
+					  "message=" + message,
+				//contentType: 'application/json', //JSON Type으로 데이터를 보낼 때,
+				success: function( response ){
+					if( response.result === "fail" ) {
+						console.error( response.message );
+						return;
+					}
+					
+					// rendering
+					render( response.data, true );
+					
+					// reset form
+					$( "#add-form" )[0].reset();
+				},
+				error: function( jqXHR, status, e ){
+					console.error( status + " : " + e );
+				}
+			} );		
+		});
+		
+		$(window).scroll(function(){
+			var $window =$(this);
+			var scrollTop = $window.scrollTop();
+			var windowHeight = $window.height();
+			var documentHeight = $(document).height();
+			
+			//console.log(documentHeight+">="+scrollTop+"+"+windowHeight);
+			
+			//scrollbar thumb가 바닥전 10px 까지 왔을 때
+			if(scrollTop+windowHeight+10>documentHeight){
+				fetchList();
+			}
+		});
+		
+		//최초 리스트 가져오기
+		fetchList();
 		
 		$("#btn-next").click(function(){
 				fetchList();
 			});
 	});
+
 
 	
 </script>
@@ -82,16 +191,18 @@ var fetchList = function(){
 	<div id="container">
 		<c:import url="/WEB-INF/views/include/header.jsp" />
 		<div id="content">
+			<div id="dialog-message" title="방명록에 글 남기기" style="display:none">
+	  			<p>빈 양식이 있습니다.</p>
+			</div>
 			<div id="guestbook">
 				<h1>방명록</h1>
 				<form id="add-form" action="#" method="post">
 					<input type="text" id="input-name" placeholder="이름">
 					<input type="password" id="input-password" placeholder="비밀번호">
-					<textarea id="tx-content" placeholder="내용을 입력해 주세요."></textarea>
+					<textarea id="ta-message" placeholder="내용을 입력해 주세요."></textarea>
 					<input type="submit" value="보내기" />
 				</form>
-				<ul id="list-guestbook">
-				</ul>
+				<ul id="list-guestbook"></ul>
 					<div style="margin:15px 0; text-align: center">
 						<button id="btn-next" style="padding:10px 20px ">next</button>
 					</div>

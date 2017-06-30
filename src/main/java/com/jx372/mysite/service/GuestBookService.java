@@ -14,9 +14,6 @@ public class GuestBookService {
 	@Autowired
 	private GuestbookDao gbDao;
 	
-	public void getInsert(GuestbookVo gbVo) {
-		gbDao.insert(gbVo);
-	}
 	public List<GuestbookVo> getList() {
 		return gbDao.getList();
 	}
