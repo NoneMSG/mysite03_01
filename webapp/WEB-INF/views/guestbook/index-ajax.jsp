@@ -50,10 +50,12 @@
 <script type="text/javascript"
 	src="${pageContext.request.contextPath }/assets/js/jquery/jquery-1.9.0.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="${pageContext.request.contextPath }/assets/js/ejs/ejs.js"></script>
 <script type="text/javascript">
 
 var isEnd = false;
-
+var listItemTemplate = new EJS({url:"${pageContext.request.contextPath }/assets/js/ejs-template/guestbook-list-item.ejs"});
+var listTemplate = new EJS({url:"${pageContext.request.contextPath }/assets/js/ejs-template/guestbook-list.ejs"});
 var MessageBox = function(title, message, callback){
 	 $("#dialog-message").attr("title", title);
 	 $("#dialog-message p ").text(message);
@@ -72,12 +74,16 @@ var render =function(vo, mode){
 	
 	//정규표현식 /\n/gi :global ignore case
 	//상용 app에선 templete 라이브러리 사용 ex) ejs 
+	/*
 	var html=
 		"<li data-no='"+vo.no+"'>"+
 		"<strong>"+ vo.name +"</strong>"+
 		"<p>"+vo.message.replace( /\n/gi, "<br>")+"</p>"+
 		"<a href='' data-no='"+vo.no+"'>삭제</a>"+
 		"</li>";
+		*/
+		
+		var html = listItemTemplate.render(vo);
 		
 		if( mode === true ) {
 			$( "#list-guestbook" ).prepend( html );	
@@ -112,9 +118,13 @@ var fetchList = function(){
 					}
 				
 					//rendering
+				/*
 					$.each(response.data, function(index, vo){
 						render( vo, false );
 					});
+					*/
+					var html = listTemplate.render( response );
+					$( "#list-guestbook" ).html( html );
 				},
 			 error : function(jqXHR,status,e){
 					console.log(status+":"+e);

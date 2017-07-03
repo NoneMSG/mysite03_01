@@ -15,11 +15,14 @@ public class GuestbookDao {
 	@Autowired
 	private SqlSession sqlSession;
 	
+	//web
 	public List<GuestbookVo> getList() {
 		List<GuestbookVo> list = sqlSession.selectList("guestbook.getList");
 	
 		return list;
 	}
+	
+	//ajax
 	public List<GuestbookVo> getList(Long startNo) {
 		List<GuestbookVo> list = sqlSession.selectList("guestbook.getListByNo",startNo);
 		return list;
