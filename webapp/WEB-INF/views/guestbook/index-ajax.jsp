@@ -231,13 +231,15 @@ var fetchList = function(){
 			}
 			
 			//방명록 메시지 입력 ajax통신 
-			console.log($.param(vo));
+			console.log($.param(vo)); //query string
+			console.log(JSON.stringify(vo));
 			$.ajax( {
 				url : "${pageContext.request.contextPath }/guestbook/api/add",
 				type: "post",
 				dataType: "json",
-				data: $.param(vo),
-				//contentType: 'application/json', //JSON Type으로 데이터를 보낼 때,
+				//data: $.param(vo),
+				data: JSON.stringify(vo),
+				contentType: 'application/json', //JSON Type으로 데이터를 보낼 때,
 				success: function( response ){
 					if( response.result === "fail" ) {
 						console.error( response.message );

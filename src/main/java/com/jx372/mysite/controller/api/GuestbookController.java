@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,9 +29,16 @@ public class GuestbookController {
 		return JsonResult.success(list);
 	}
 	
+//	@ResponseBody	
+//	@RequestMapping( value="/add", method=RequestMethod.POST )
+//	public JsonResult add(@ModelAttribute GuestbookVo vo) {
+//		guestbookService.writeMessage(vo);
+//		return JsonResult.success(vo);
+//	}
+	
 	@ResponseBody	
 	@RequestMapping( value="/add", method=RequestMethod.POST )
-	public JsonResult add(@ModelAttribute GuestbookVo vo) {
+	public JsonResult add(@RequestBody GuestbookVo vo) {
 		guestbookService.writeMessage(vo);
 		return JsonResult.success(vo);
 	}
