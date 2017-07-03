@@ -88,7 +88,7 @@ var render =function(vo, mode){
 
 var fetchList = function(){
 	if(isEnd===true){
-		return
+		return;
 	}
 	var startNo = 
 		$("#list-guestbook li").last().data("no") || 0; //data값이 null이라면 0으로 세팅하는 논리연산
@@ -198,9 +198,13 @@ var fetchList = function(){
 			//submit event 기본 동작 정지 posting을 막음
 			event.preventDefault();
 			
+			var vo ={
+				
+			};
+			
 			//form data validation
-			var name = $("#input-name").val();
-			if(name===""){
+			vo.name = $("#input-name").val();
+			if(vo.name===""){
 				MessageBox("방명록 글 입력","이름은 필수 입력항목",
 						function(){
 					$("#input-name").focus();
@@ -208,8 +212,8 @@ var fetchList = function(){
 				return ;
 			}
 			
-			var password = $("#input-password").val();
-			if(password===""){
+			vo.password = $("#input-password").val();
+			if(vo.password===""){
 				MessageBox("메시지 입력","비밀번호는 필수 입력항목",
 						function(){
 					$("#input-password").focus();
@@ -217,8 +221,8 @@ var fetchList = function(){
 				return ;
 			}
 			
-			var message = $("#ta-message").val();
-			if(message===""){
+			vo.message = $("#ta-message").val();
+			if(vo.message===""){
 				MessageBox("메시지 입력","내용은 필수 입력항목",
 						function(){
 					$("#ta-message").focus();
@@ -227,13 +231,12 @@ var fetchList = function(){
 			}
 			
 			//방명록 메시지 입력 ajax통신 
+			console.log($.param(vo));
 			$.ajax( {
 				url : "${pageContext.request.contextPath }/guestbook/api/add",
 				type: "post",
 				dataType: "json",
-				data: "name=" + name + "&" +
-					  "password=" + password + "&" +
-					  "message=" + message,
+				data: $.param(vo),
 				//contentType: 'application/json', //JSON Type으로 데이터를 보낼 때,
 				success: function( response ){
 					if( response.result === "fail" ) {
