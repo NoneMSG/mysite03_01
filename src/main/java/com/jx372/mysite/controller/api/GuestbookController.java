@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,8 @@ import com.jx372.mysite.dto.JsonResult;
 import com.jx372.mysite.service.GuestBookService;
 import com.jx372.mysite.vo.GuestbookVo;
 
+//@CrossOrigin({"http://localhost:8088", "http://www.naver.com:80"})
+@CrossOrigin("")
 @Controller("guestbookApiController")
 @RequestMapping("/guestbook/api")
 public class GuestbookController {
@@ -28,13 +31,7 @@ public class GuestbookController {
 		List<GuestbookVo> list = guestbookService.getList(startNo);
 		return JsonResult.success(list);
 	}
-	
-//	@ResponseBody	
-//	@RequestMapping( value="/add", method=RequestMethod.POST )
-//	public JsonResult add(@ModelAttribute GuestbookVo vo) {
-//		guestbookService.writeMessage(vo);
-//		return JsonResult.success(vo);
-//	}
+
 	
 	@ResponseBody	
 	@RequestMapping( value="/add", method=RequestMethod.POST )

@@ -53,7 +53,16 @@
 <script src="${pageContext.request.contextPath }/assets/js/ejs/ejs.js"></script>
 <script type="text/javascript">
 
+//jquery plugin
+(function($){
+	//hello 함수 플러그인 생성
+	$.fn.hello = function(){
+		console.log( $(this).attr("id") + "heeeellllloooo======>");
+	}
+})(jQuery);
+
 var isEnd = false;
+//경로에 있는 ejs템플릿 소스들을 이용하여 html을 생성
 var listItemTemplate = new EJS({url:"${pageContext.request.contextPath }/assets/js/ejs-template/guestbook-list-item.ejs"});
 var listTemplate = new EJS({url:"${pageContext.request.contextPath }/assets/js/ejs-template/guestbook-list.ejs"});
 var MessageBox = function(title, message, callback){
@@ -100,7 +109,7 @@ var fetchList = function(){
 		$("#list-guestbook li").last().data("no") || 0; //data값이 null이라면 0으로 세팅하는 논리연산
 		
 		$.ajax({
-			url: "${pageContext.request.contextPath}/guestbook/api/list?sno="+startNo,
+			url: "http://guestbook.jx372.com:8088${pageContext.request.contextPath}/guestbook/api/list?sno="+startNo,
 			type:"get",
 			dataType: "json",
 			data:"",
@@ -123,8 +132,11 @@ var fetchList = function(){
 						render( vo, false );
 					});
 					*/
-					var html = listTemplate.render( response );
-					$( "#list-guestbook" ).html( html );
+
+					var htmls = listTemplate.render( response );
+					$( "#list-guestbook" ).append( htmls );
+					$( "#list-guestbook" ).hello();
+					
 				},
 			 error : function(jqXHR,status,e){
 					console.log(status+":"+e);
